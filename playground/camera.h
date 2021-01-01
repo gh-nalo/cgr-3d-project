@@ -15,7 +15,8 @@ enum class Camera_Movement {
 	BACKWARD,
 	LEFT,
 	RIGHT,
-	UP
+	UP,
+	DOWN
 };
 
 /// <summary>
@@ -90,6 +91,8 @@ public:
 			Position += glm::vec3(Right.x, 0.0, Right.z) * velocity;
 		if (direction == Camera_Movement::UP)
 			Position += glm::vec3(0.0, 1.0, 0.0) * velocity;
+		if (direction == Camera_Movement::DOWN)
+			Position -= glm::vec3(0.0, 1.0, 0.0) * velocity;
 	}
 
 	/// <summary>

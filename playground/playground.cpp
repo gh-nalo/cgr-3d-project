@@ -41,6 +41,8 @@ int main()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+	generateCubes();
+
 	// Start game loop
 	update();
 
@@ -62,10 +64,11 @@ void update() {
 	Shader lightingShader = Shader("light.vs", "light.fs");
 
 	// Load Textures
-	// unsigned int diffuseMap = loadTexture("brick_texture.png");
-	// unsigned int specularMap = loadTexture("brick_specular.png");
-	unsigned int diffuseMap = loadTexture("brick_texture.png");
-	unsigned int specularMap = loadTexture("brick_specular.png");
+	unsigned int diffuseMap = loadTexture("container.png");
+	unsigned int specularMap = loadTexture("container_specular.png");
+	
+	unsigned int diffuseMap2 = loadTexture("brick_texture.png");
+	unsigned int specularMap2 = loadTexture("brick_specular.png");
 
 	// Game Loop
 	while (!glfwWindowShouldClose(window))
@@ -87,7 +90,7 @@ void update() {
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
-		
+
 		updateLightingShaderInformation(lightingShader, model, view, projection);
 
 		// Textures
@@ -102,14 +105,32 @@ void update() {
 		glBindVertexArray(cubeVAO);
 
 		// Calculate model matrix for each object
-		glm::mat4 model_obj = glm::mat4(1.0f);
-		model_obj = glm::translate(model_obj, cubePositions[0]);
-		model_obj = glm::scale(model_obj, glm::vec3(40.0, 1.0, 40.0));
-		model_obj = glm::rotate(model_obj, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
-		lightingShader.setMat4("model", model_obj);
+		for (int i = 0; i < cubePositions.size(); i++) {
+			if (i >= cubePositions.size() / 2) {
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, diffuseMap2);
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, specularMap2);
+			}
+			else {
+				// Textures
+				// Diffuse map
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, diffuseMap);
+				// Specular map
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, specularMap);
+			}
 
-		// Draw faces
-		glDrawArrays(GL_TRIANGLES, 0, 36); // 36 vertices (6 faces * 2 triangles * 3 vertices)
+			glm::mat4 model_obj = glm::mat4(1.0f);
+			model_obj = glm::translate(model_obj, cubePositions[i]);
+			model_obj = glm::scale(model_obj, glm::vec3(1.0, 1.0, 1.0));
+			model_obj = glm::rotate(model_obj, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+			lightingShader.setMat4("model", model_obj);
+
+			// Draw faces
+			glDrawArrays(GL_TRIANGLES, 0, 36); // 36 vertices (6 faces * 2 triangles * 3 vertices)
+		}
 
 		// Swap buffers, poll IO events
 		glfwSwapBuffers(window);
@@ -180,6 +201,9 @@ void processInput(GLFWwindow* window)
 	// Space - Move up
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		camera.ProcessKeyboard(Camera_Movement::UP, deltaTime);
+	// Ctrl - Move down
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		camera.ProcessKeyboard(Camera_Movement::DOWN, deltaTime);
 }
 
 
@@ -315,5 +339,16 @@ void initializeFunctionPointers() {
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		std::exit(-1);
+	}
+}
+
+/// <summary>
+///		Generate map cubes
+/// </summary>
+void generateCubes() {
+	for (float y = -10.0; y < 10.0; y += 1.0) {
+		for (float x = 0.0; x < 20.0; x += 1.0) {
+			cubePositions.push_back(glm::vec3(x, 0.0, y));
+		}
 	}
 }

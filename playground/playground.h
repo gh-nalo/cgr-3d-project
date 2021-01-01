@@ -121,9 +121,7 @@ float vertices[] = {
 /// <summary>
 ///		Positions, where to place cubes
 /// </summary>
-glm::vec3 cubePositions[] = {
-	glm::vec3(0.0f,  0.0f,  0.0f),
-};
+std::vector<glm::vec3> cubePositions;
 
 /// <summary>
 ///		Animation Loop
@@ -183,3 +181,8 @@ GLFWwindow* initializeWindow();
 ///		Load OpenGL function pointers (GLAD)
 /// </summary>
 void initializeFunctionPointers();
+
+/// <summary>
+///		Generate map cubes
+/// </summary>
+void generateCubes();
