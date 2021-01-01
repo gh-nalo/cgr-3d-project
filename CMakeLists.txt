@@ -37,6 +37,7 @@ include_directories(
 	external/glm-0.9.7.1/
 	external/glew-1.13.0/include/
 	external/glad/include/
+	external/assimp/include/
 	.
 )
 
@@ -56,30 +57,37 @@ add_definitions(
 
 # User playground
 add_executable(playground 
+
 	playground/playground.cpp
 	playground/playground.h
+
 	playground/camera.h
-	playground/shader_m.h
 	playground/stb_image.h
+	playground/mesh.h
+	playground/model.h
+	playground/shader_m.h
+
+	playground/glad.c
+
 	playground/light.vs
 	playground/light.fs
-	playground/lightcube.vs
-	playground/lightcube.fs
-	playground/glad.c
+
 	playground/container.png
 	playground/container_specular.png
-	common/shader.cpp
-	common/shader.hpp
+	playground/brick_texture.png
+	playground/brick_specular.png
 )
+
 target_link_libraries(playground
 	${ALL_LIBS}
 )
+
 # Xcode and Visual working directories
 set_target_properties(playground PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/playground/")
 create_target_launcher(playground WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/playground/")
 
 SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
-SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*shader$" )
+SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*.[v|f]s" )
 
 if (NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
 
