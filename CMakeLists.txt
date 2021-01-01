@@ -58,13 +58,16 @@ add_definitions(
 add_executable(playground 
 	playground/playground.cpp
 	playground/playground.h
-	playground/shader_s.h
+	playground/camera.h
+	playground/shader_m.h
 	playground/stb_image.h
-	playground/vertexShader.vs
-	playground/fragmentShader.fs
+	playground/light.vs
+	playground/light.fs
+	playground/lightcube.vs
+	playground/lightcube.fs
 	playground/glad.c
-	playground/awesomeface.png
-	playground/container.jpg
+	playground/container.png
+	playground/container_specular.png
 	common/shader.cpp
 	common/shader.hpp
 )

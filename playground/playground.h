@@ -3,7 +3,9 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <playground/stb_image.h>
-#include <playground/shader_s.h>
+
+#include <playground/shader_m.h>
+#include <playground/camera.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -15,6 +17,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
+unsigned int loadTexture(const char* path);
 
 // settings
 const unsigned int SCR_WIDTH = 1920;
