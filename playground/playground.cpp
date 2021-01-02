@@ -72,6 +72,9 @@ void update() {
 
 	int second = -1;
 
+	float soundTimer = 0.0f;
+	bool soundPlayed = false;
+
 	// Game Loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -80,12 +83,35 @@ void update() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		totalTimePassed += deltaTime;
+		soundTimer += deltaTime;
+		flashLightTimer -= deltaTime;
 
+		// Print time passed in console every second
 		if ((int)totalTimePassed != second) {
 			std::cout << "Time passed: " << floor(totalTimePassed) << std::endl;
 			second++;
 		}
 		int second = (int)totalTimePassed;
+
+		// Prevent sound when flashlight is turned off
+		if (!flashLightOn) {
+			soundPlayed = false;
+			soundTimer = 0.0f;
+		}
+		// Start "suspense" music
+		else if (!soundPlayed && soundTimer > 10.0f) {
+			try {
+				PlaySound(TEXT("8seconds.wav"), NULL, SND_FILENAME | SND_ASYNC);
+				soundPlayed = true;
+			}
+			catch (const std::exception&) {
+				std::cout << "Could not play sound file." << std::endl;
+			}
+		}
+		// End game
+		else if (soundPlayed && soundTimer > 19.0f) {
+			cheatMode = true;
+		}
 
 		// Process user input
 		processInput(window);
@@ -107,8 +133,11 @@ void update() {
 		// Calculate model matrix for each object
 		for (int i = 0; i < cubePositions.size(); i++) {
 			if (cubePositions[i].y == 0.0) {
+				// Textures
+				// Diffuse map
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, ground_texture);
+				// Specular map
 				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, ground_specular);
 			}
@@ -146,13 +175,19 @@ void update() {
 void updateLightingShaderInformation(Shader& lightingShader, glm::mat4& model, glm::mat4& view, glm::mat4& projection) {
 	// Activate shader before setting uniforms/drawing objects
 	lightingShader.use();
-	lightingShader.setVec3("light.position", camera.Position);
-	lightingShader.setVec3("light.direction", camera.Front);
-	lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(0.5f)));
-	lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(12.5f)));
-	lightingShader.setVec3("viewPos", camera.Position);
 
 	// Light properties
+	lightingShader.setVec3("light.position", camera.Position);
+	lightingShader.setVec3("light.direction", camera.Front);
+	if (flashLightOn) {
+		lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(15.0f)));
+		lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+	}
+	else {
+		lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(0.0f)));
+		lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(0.0f)));
+	}
+	lightingShader.setVec3("viewPos", camera.Position);
 	lightingShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
 	lightingShader.setVec3("light.diffuse", 0.2f, 0.2f, 0.2f);
 	lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
@@ -200,7 +235,15 @@ void processInput(GLFWwindow* window)
 	// D - Move right
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(Camera_Movement::RIGHT, deltaTime);
-	
+
+	// C - Toggle flashlight
+	if (flashLightTimer < 0.0 && glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+		flashLightOn = !flashLightOn;
+		flashLightTimer = 0.5f;
+
+		PlaySound(NULL, NULL, SND_ASYNC);
+	}
+
 	// Cheat/Debugging mode
 	// X - Activate cheat mode
 	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)

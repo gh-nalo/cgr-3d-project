@@ -78,10 +78,13 @@ add_executable(playground
 	playground/container_specular.png
 	playground/brick_texture.png
 	playground/brick_specular.png
+	
+	playground/8seconds.wav
 )
 
 target_link_libraries(playground
 	${ALL_LIBS}
+	winmm.lib
 )
 
 # Xcode and Visual working directories
@@ -89,7 +92,9 @@ set_target_properties(playground PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_
 create_target_launcher(playground WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/playground/")
 
 SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
-SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*.[v|f]s" )
+SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*.[vf]s" )
+SOURCE_GROUP(resources REGULAR_EXPRESSION ".(wav|png)" )
+
 
 if (NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
 

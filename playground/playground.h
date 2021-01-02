@@ -12,6 +12,8 @@
 #include <common/shader.hpp>
 
 #include <iostream>
+#include <Windows.h>
+#include <mmsystem.h>
 
 /// <summary>
 ///		GLFW Window
@@ -57,6 +59,16 @@ float lastFrame = 0.0f;
 ///		Total time passed
 /// </summary>
 float totalTimePassed = 0.0f;
+
+/// <summary>
+///		Toggle flashlight
+/// </summary>
+bool flashLightOn = false;
+
+/// <summary>
+///		Timer when flashlight can be toggled again
+/// </summary>
+float flashLightTimer = 0.5f;
 
 /// <summary>
 ///		VAO, VBO of the cubes
