@@ -22,7 +22,7 @@ enum class Camera_Movement {
 /// <summary>
 ///     Initial camera values
 /// </summary>
-const float YAW = -90.0f, PITCH = 0.0f, SPEED = 2.5f, SENSITIVITY = 0.1f, ZOOM = 45.0f;
+const float YAW = -90.0f, PITCH = 0.0f, SPEED = 2.5f, SENSITIVITY = 0.1f, ZOOM = 60.0f;
 
 /// <summary>
 ///		Processes user input
@@ -129,10 +129,10 @@ public:
 	void ProcessMouseScroll(float yoffset)
 	{
 		Zoom -= (float)yoffset;
-		if (Zoom < 1.0f)
-			Zoom = 1.0f;
-		if (Zoom > 45.0f)
-			Zoom = 45.0f;
+		if (Zoom < 40.0f)
+			Zoom = 40.0f;
+		if (Zoom > 60.0f)
+			Zoom = 60.0f;
 	}
 
 private:

@@ -24,7 +24,7 @@ int main()
 	// Configure cubeVBO
 	glGenBuffers(1, &cubeVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
 	// Configure cubeVAO
 	glGenVertexArrays(1, &cubeVAO);
@@ -64,11 +64,13 @@ void update() {
 	Shader lightingShader = Shader("light.vs", "light.fs");
 
 	// Load Textures
-	unsigned int diffuseMap = loadTexture("container.png");
-	unsigned int specularMap = loadTexture("container_specular.png");
-	
-	unsigned int diffuseMap2 = loadTexture("brick_texture.png");
-	unsigned int specularMap2 = loadTexture("brick_specular.png");
+	unsigned int ground_texture = loadTexture("container.png");
+	unsigned int ground_specular = loadTexture("container_specular.png");
+
+	unsigned int brick_texture = loadTexture("brick_texture.png");
+	unsigned int brick_specular = loadTexture("brick_specular.png");
+
+	int second = -1;
 
 	// Game Loop
 	while (!glfwWindowShouldClose(window))
@@ -79,11 +81,17 @@ void update() {
 		lastFrame = currentFrame;
 		totalTimePassed += deltaTime;
 
+		if ((int)totalTimePassed != second) {
+			std::cout << "Time passed: " << floor(totalTimePassed) << std::endl;
+			second++;
+		}
+		int second = (int)totalTimePassed;
+
 		// Process user input
 		processInput(window);
 
 		// Reset - Background color
-		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Model (World), View (Camera), Projection matrices
@@ -93,33 +101,25 @@ void update() {
 
 		updateLightingShaderInformation(lightingShader, model, view, projection);
 
-		// Textures
-		// Diffuse map
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffuseMap);
-		// Specular map
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, specularMap);
-
 		// Render game objects
 		glBindVertexArray(cubeVAO);
 
 		// Calculate model matrix for each object
 		for (int i = 0; i < cubePositions.size(); i++) {
-			if (i >= cubePositions.size() / 2) {
+			if (cubePositions[i].y == 0.0) {
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, diffuseMap2);
+				glBindTexture(GL_TEXTURE_2D, ground_texture);
 				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, specularMap2);
+				glBindTexture(GL_TEXTURE_2D, ground_specular);
 			}
 			else {
 				// Textures
 				// Diffuse map
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, diffuseMap);
+				glBindTexture(GL_TEXTURE_2D, brick_texture);
 				// Specular map
 				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, specularMap);
+				glBindTexture(GL_TEXTURE_2D, brick_specular);
 			}
 
 			glm::mat4 model_obj = glm::mat4(1.0f);
@@ -148,13 +148,13 @@ void updateLightingShaderInformation(Shader& lightingShader, glm::mat4& model, g
 	lightingShader.use();
 	lightingShader.setVec3("light.position", camera.Position);
 	lightingShader.setVec3("light.direction", camera.Front);
-	lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-	lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+	lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(0.5f)));
+	lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(12.5f)));
 	lightingShader.setVec3("viewPos", camera.Position);
 
 	// Light properties
 	lightingShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
-	lightingShader.setVec3("light.diffuse", 0.8f, 0.8f, 0.8f);
+	lightingShader.setVec3("light.diffuse", 0.2f, 0.2f, 0.2f);
 	lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 	lightingShader.setFloat("light.constant", 1.0f);
 	lightingShader.setFloat("light.linear", 0.09f);
@@ -167,7 +167,6 @@ void updateLightingShaderInformation(Shader& lightingShader, glm::mat4& model, g
 
 	// Timing
 	lightingShader.setFloat("iTime", totalTimePassed);
-	std::cout << "Time passed: " << totalTimePassed << std::endl;
 
 	// MVP
 	lightingShader.setMat4("model", model);
@@ -346,9 +345,21 @@ void initializeFunctionPointers() {
 ///		Generate map cubes
 /// </summary>
 void generateCubes() {
-	for (float y = -10.0; y < 10.0; y += 1.0) {
-		for (float x = 0.0; x < 20.0; x += 1.0) {
-			cubePositions.push_back(glm::vec3(x, 0.0, y));
+	size_t width = 50;
+	float xCoord = (-1.0) * (float)width / 2.0;
+	float zCoord = xCoord;
+
+	for (size_t y = 0; y < width; y++) {
+		for (size_t x = 0; x < width; x++) {
+			cubePositions.push_back(glm::vec3(xCoord, 0.0, zCoord));
+
+			if (world_1[x + y * width]) {
+				cubePositions.push_back(glm::vec3(xCoord, 1.0, zCoord));
+				cubePositions.push_back(glm::vec3(xCoord, 2.0, zCoord));
+			}
+			xCoord += 1.0f;
 		}
+		zCoord += 1.0f;
+		xCoord = (-1.0) * (float)width / 2.0;
 	}
 }
