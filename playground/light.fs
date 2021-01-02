@@ -31,6 +31,7 @@ uniform Material material;
 uniform Light light;
 
 uniform float iTime;
+uniform bool cheatMode;
 
 void main()
 {
@@ -66,7 +67,12 @@ void main()
         
     vec3 result = ambient + diffuse + specular;
 
-    FragColor = vec4(result, 1.0); // Flashlight
+    if(cheatMode) {
+        FragColor = vec4(texture(material.diffuse, textureCoordinates).rgb, 1.0); // For map building
+    } else {
+        FragColor = vec4(result, 1.0); // Flashlight
+	}
+    
     // FragColor = 0.5 + 0.5 * cos(iTime + vec4(1.0, 1.0, 0.0, 1.0)); // Time testing
-    // FragColor = vec4(texture(material.diffuse, textureCoordinates).rgb, 1.0); // For map building
+    
 } 

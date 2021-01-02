@@ -172,6 +172,9 @@ void updateLightingShaderInformation(Shader& lightingShader, glm::mat4& model, g
 	lightingShader.setMat4("model", model);
 	lightingShader.setMat4("view", view);
 	lightingShader.setMat4("projection", projection);
+
+	// Cheat mode
+	lightingShader.setBool("cheatMode", cheatMode);
 }
 
 /// <summary>
@@ -197,11 +200,16 @@ void processInput(GLFWwindow* window)
 	// D - Move right
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(Camera_Movement::RIGHT, deltaTime);
+	
+	// Cheat/Debugging mode
+	// X - Activate cheat mode
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+		cheatMode = !cheatMode;
 	// Space - Move up
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	if (cheatMode && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		camera.ProcessKeyboard(Camera_Movement::UP, deltaTime);
 	// Ctrl - Move down
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	if (cheatMode && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 		camera.ProcessKeyboard(Camera_Movement::DOWN, deltaTime);
 }
 

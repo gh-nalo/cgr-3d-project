@@ -29,6 +29,11 @@ const unsigned int SCR_WIDTH = 1920, SCR_HEIGHT = 1080;
 Camera camera = Camera(glm::vec3(0.0f, 1.5f, 0.0));
 
 /// <summary>
+///		Activate cheat mode
+/// </summary>
+bool cheatMode = false;
+
+/// <summary>
 ///		Initial mouse position
 /// </summary>
 float lastX = SCR_WIDTH / 2.0f, lastY = SCR_HEIGHT / 2.0f;
