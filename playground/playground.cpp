@@ -64,8 +64,8 @@ void update() {
 	Shader lightingShader = Shader("light.vs", "light.fs");
 
 	// Load Textures
-	unsigned int ground_texture = loadTexture("container.png");
-	unsigned int ground_specular = loadTexture("container_specular.png");
+	unsigned int ground_texture = loadTexture("wood_texture.jpg");
+	unsigned int ground_specular = loadTexture("wood_specular.png");
 
 	unsigned int brick_texture = loadTexture("brick_texture.png");
 	unsigned int brick_specular = loadTexture("brick_specular.png");

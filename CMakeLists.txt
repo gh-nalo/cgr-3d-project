@@ -74,8 +74,8 @@ add_executable(playground
 	playground/light.vs
 	playground/light.fs
 
-	playground/container.png
-	playground/container_specular.png
+	playground/wood_texture.jpg
+	playground/wood_specular.png
 	playground/brick_texture.png
 	playground/brick_specular.png
 	
