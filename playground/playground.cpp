@@ -94,7 +94,7 @@ void update() {
 		int second = (int)totalTimePassed;
 
 		// Prevent sound when flashlight is turned off
-		if (!flashLightOn) {
+		if (!flashLightOn || cheatMode) {
 			soundPlayed = false;
 			soundTimer = 0.0f;
 		}

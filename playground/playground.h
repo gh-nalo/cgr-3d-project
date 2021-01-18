@@ -7,9 +7,10 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <playground/camera.h>
-#include <playground/model.h>
 
-#include <common/shader.hpp>
+#define STB_IMAGE_IMPLEMENTATION
+#include <playground/stb_image.h>
+#include <playground/shader.h>
 
 #include <iostream>
 #include <Windows.h>

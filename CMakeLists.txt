@@ -62,12 +62,9 @@ add_executable(playground
 	playground/playground.h
 	playground/camera.cpp
 	playground/camera.h
-	playground/shader_m.cpp
-	playground/shader_m.h
-	
+	playground/shader.cpp
+	playground/shader.h
 	playground/stb_image.h
-	playground/mesh.h
-	playground/model.h
 
 	playground/glad.c
 
