@@ -99,7 +99,7 @@ void update() {
 			soundTimer = 0.0f;
 		}
 		// Start "suspense" music
-		else if (!soundPlayed && soundTimer > 10.0f) {
+		else if (!soundPlayed && soundTimer > 30.0f) {
 			try {
 				PlaySound(TEXT("8seconds.wav"), NULL, SND_FILENAME | SND_ASYNC);
 				soundPlayed = true;
@@ -109,7 +109,7 @@ void update() {
 			}
 		}
 		// End game
-		else if (soundPlayed && soundTimer > 19.0f) {
+		else if (soundPlayed && soundTimer > 39.0f) {
 			cheatMode = true;
 		}
 
@@ -173,12 +173,14 @@ void update() {
 /// </summary>
 /// <param name="lightingShader">Lighting Shader to be updated</param>
 void updateLightingShaderInformation(Shader& lightingShader, glm::mat4& model, glm::mat4& view, glm::mat4& projection) {
-	// Activate shader before setting uniforms/drawing objects
+	
+	// Activate shader
 	lightingShader.use();
 
 	// Light properties
 	lightingShader.setVec3("light.position", camera.Position);
 	lightingShader.setVec3("light.direction", camera.Front);
+
 	if (flashLightOn) {
 		lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(15.0f)));
 		lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
@@ -187,18 +189,24 @@ void updateLightingShaderInformation(Shader& lightingShader, glm::mat4& model, g
 		lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(0.0f)));
 		lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(0.0f)));
 	}
-	lightingShader.setVec3("viewPos", camera.Position);
-	lightingShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
-	lightingShader.setVec3("light.diffuse", 0.2f, 0.2f, 0.2f);
-	lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-	lightingShader.setFloat("light.constant", 1.0f);
-	lightingShader.setFloat("light.linear", 0.09f);
-	lightingShader.setFloat("light.quadratic", 0.032f);
 
-	// Material properties
+	lightingShader.setVec3("viewPos", camera.Position);
+
+	// Light and material properties
+	// Ambient Light
+	//lightingShader.setVec3("light.ambient", 0.3f, 0.3f, 0.3f); // in case stream is too dark
+	lightingShader.setVec3("light.ambient", 0.15f, 0.15f, 0.15f);
+
+	// Diffuse Light
+	lightingShader.setVec3("light.diffuse", 0.01f, 0.01f, 0.01f);
 	lightingShader.setInt("material.diffuse", 0);
+
+	// Specular Light
+	lightingShader.setVec3("light.specular", 0.05f, 0.05f, 0.05f);
 	lightingShader.setInt("material.specular", 1);
-	lightingShader.setFloat("material.shininess", 32.0f);
+
+	// Cheat mode
+	lightingShader.setBool("cheatMode", cheatMode);
 
 	// Timing
 	lightingShader.setFloat("iTime", totalTimePassed);
@@ -208,8 +216,13 @@ void updateLightingShaderInformation(Shader& lightingShader, glm::mat4& model, g
 	lightingShader.setMat4("view", view);
 	lightingShader.setMat4("projection", projection);
 
-	// Cheat mode
-	lightingShader.setBool("cheatMode", cheatMode);
+	// Settings
+	lightingShader.setFloat("light.constant", 1.0f);
+	lightingShader.setFloat("light.linear", 0.09f);
+	lightingShader.setFloat("light.quadratic", 0.032f);
+
+	// Material properties
+	lightingShader.setFloat("material.shininess", 16.0f);
 }
 
 /// <summary>
